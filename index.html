@@ -1,0 +1,33 @@
+<!doctype html><html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ButterflyTamilChat</title><meta name="description" content="ButterflyTamilChat live Tamil chat, private messages, calls and FM.">
+<link rel="stylesheet" href="/style.css"></head><body>
+<div class="shell">
+<header><div class="brand"><div class="logo">🦋</div><div><h1>Butterfly<span>TamilChat</span></h1><p>தமிழ் நண்பர்கள் • Live Chat • FM</p></div></div><div class="online"><i></i><b id="onlineCount">0</b> online</div></header>
+<main>
+<aside class="left">
+<section class="card profile"><div class="avatar" id="myAvatar">G</div><div><b id="myName">Guest</b><small>Online now</small></div><button id="editName">✎</button></section>
+<section class="card rooms"><label>CHAT ROOMS</label>
+<button class="room active" data-room="tamil-friends">💬 <div><b>Tamil Friends</b><small>Public room</small></div></button>
+<button class="room" data-room="fm-lounge">🎵 <div><b>FM Lounge</b><small>Music & chat</small></div></button>
+<button class="room" data-room="love-corner">❤️ <div><b>Love Corner</b><small>Public room</small></div></button>
+</section>
+<section class="card fm"><div class="fmhead"><div><label>BUTTERFLY FM</label><b>Live Radio</b></div><em>● LIVE</em></div><div class="disc">♫</div><strong>ButterflyTamilChat FM</strong>
+<audio id="radio" controls></audio><input id="streamUrl" placeholder="Your licensed MP3/AAC/HLS stream URL"><button class="primary" id="setStream">Play Live FM</button><small>Use only audio you own or are licensed to broadcast.</small></section>
+</aside>
+
+<section class="card chat"><div class="chathead"><div><h2 id="roomTitle">🦋 Tamil Friends</h2><p id="roomSubtitle">Public live chat • தமிழில் பேசலாம்</p></div><div class="calls"><button id="audioCall">📞</button><button id="videoCall">📹</button></div></div>
+<div class="messages" id="messages"><div class="welcome"><div>🦋</div><h2>Welcome to ButterflyTamilChat</h2><p>தமிழில் பேசலாம் • நண்பர்களை சந்திக்கலாம் • FM கேட்கலாம்</p></div></div>
+<form class="composer" id="composer"><button type="button" id="emoji">😊</button><input id="message" maxlength="1000" placeholder="Type your message... / தமிழில் எழுதுங்கள்"><button class="send">Send ➤</button></form></section>
+
+<aside class="right"><section class="card people"><label>ONLINE NOW</label><div id="peopleList"></div><small>Select a user for private chat or calling.</small></section>
+<section class="card community"><label>COMMUNITY</label><p>🤝 Be kind</p><p>🚫 No spam</p><p>🛡️ Respect privacy</p><p>🎵 Licensed media only</p></section></aside>
+</main>
+
+<section class="private card" id="privatePanel"><div class="privatehead"><b>Private chat · <span id="privateName"></span></b><button id="closePrivate">×</button></div><div id="privateMessages" class="privateMessages"></div><form id="privateForm" class="composer"><input id="privateInput" maxlength="1000" placeholder="Private message..."><button class="send">Send</button></form></section>
+</div>
+
+<dialog id="nameDialog"><form id="nameForm" class="dialog"><h2>🦋 ButterflyTamilChat</h2><p>Choose your display name.</p><input id="nameInput" maxlength="30" placeholder="Your name" autofocus><button class="primary">Enter Chat</button></form></dialog>
+<dialog id="incomingDialog"><div class="dialog"><h2 id="incomingTitle">Incoming call</h2><p id="incomingMode"></p><div class="actions"><button class="primary" id="answerCall">Answer</button><button class="danger" id="rejectCall">Decline</button></div></div></dialog>
+<dialog id="callDialog"><div class="dialog callbox"><h2 id="callTitle">Call</h2><div class="video"><video id="remoteVideo" autoplay playsinline></video><video id="localVideo" autoplay muted playsinline></video></div><audio id="remoteAudio" autoplay></audio><div class="actions"><button id="mute">🎙️</button><button id="toggleVideo">📹</button><button class="danger" id="hangup">End Call</button></div></div></dialog>
+<script src="/socket.io/socket.io.js"></script><script src="/app.js"></script></body></html>
