@@ -23,7 +23,7 @@ socket.on('private:history',h=>{if(privateTarget===h.target){privateMessages.inn
 function notifyUser(title,body){if(document.visibilityState==='visible')return;if('Notification' in window&&Notification.permission==='granted')new Notification(title,{body});}
 function showTyping(name){const el=$('#typingIndicator');el.textContent=`${name} is typing…`;clearTimeout(window._btcTyping);window._btcTyping=setTimeout(()=>el.textContent='',1800);}
 function applyTheme(){const t=localStorage.getItem('btc_theme')||'dark';document.body.classList.toggle('light',t==='light');$('#themeBtn').textContent=t==='light'?'☀️':'🌙';}
-function selectPerson(uid,name,el,socketId){selectedId=socketId||uid;selectedName=name;document.querySelectorAll('.person').forEach(x=>x.classList.remove('selected','unread'));el.classList.add('selected');privateTarget=uid;$('#privateName').textContent=name;$('#privatePanel').classList.add('open');privateMessages.innerHTML='';socket.emit('private:open',id)}
+function selectPerson(uid,name,el,socketId){selectedId=socketId||uid;selectedName=name;document.querySelectorAll('.person').forEach(x=>x.classList.remove('selected','unread'));el.classList.add('selected');privateTarget=uid;$('#privateName').textContent=name;$('#privatePanel').classList.add('open');privateMessages.innerHTML='';socket.emit('private:open',uid)}
 $('#closePrivate').onclick=()=>$('#privatePanel').classList.remove('open');
 function readImage(file,max=2200000){return new Promise((resolve,reject)=>{if(!file)return resolve(null);if(file.size>max)return reject(new Error('File is too large.'));const r=new FileReader();r.onload=()=>resolve({type:file.type,data:r.result,name:file.name});r.onerror=reject;r.readAsDataURL(file)})}
 let pendingAttachment=null;
