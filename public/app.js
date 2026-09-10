@@ -19,11 +19,26 @@ socket.on('profile:updated',u=>{myName=u.name;myAvatar=u.avatar||'';localStorage
 function renderPeople(){const list=directoryCache;const term=($('#userSearch')?.value||'').toLowerCase();peopleList.innerHTML='';$('#peopleCount').textContent=list.length;list.filter(u=>!term||u.name.toLowerCase().includes(term)).forEach(u=>{const p=document.createElement('div');p.className='person'+(u.id===selectedId?' selected':'');p.dataset.id=u.id;p.innerHTML=`${avatarHTML(u)}<div><b>${esc(u.name)}${u.id===myId?' (You)':''}</b><small>${esc(roomsMeta[u.room]?.name||u.room)}${u.muted?' • muted':''}</small></div><i>●</i>`;if(u.id!==myId)p.onclick=()=>selectPerson(u.uid,u.name,p,u.id);peopleList.appendChild(p)})}
 socket.on('directory',list=>{directoryCache=list;$('#onlineCount').textContent=list.length;renderPeople();});
 socket.on('chat',m=>{if(m.room===currentRoom)addBubble(messages,m.name,m.text,m.userId===myUid,m.time,m.attachment)});
-socket.on('private:history',h=>{if(privateTarget===h.target){privateMessages.innerHTML='';h.messages.forEach(m=>addBubble(privateMessages,m.name,m.text,m.from===myUid,m.time,m.attachment));}}); socket.on('private:message',m=>{if(privateTarget&&m.from===privateTarget)addBubble(privateMessages,m.name,m.text,m.from===myUid,m.time,m.attachment);else if(m.from!==myUid){const p=peopleList.querySelector(`[data-id="${m.from}"]`);if(p)p.classList.add('unread');notifyUser(m.name,'New private message');}});
-function notifyUser(title,body){if(document.visibilityState==='visible')return;if('Notification' in window&&Notification.permission==='granted')new Notification(title,{body});}
+socket.on('private:history',h=>{if(privateTarget===h.target){privateMessages.innerHTML='';h.messages.forEach(m=>addBubble(privateMessages,m.name,m.text,m.from===myUid,m.time,m.attachment));}}); socket.on('private:message',m=>{
+  if(m.from===myUid)return;
+  if(privateTarget&&m.from===privateTarget){
+    addBubble(privateMessages,m.name,m.text,false,m.time,m.attachment);
+    return;
+  }
+  unreadPrivateCount++;
+  updateUnreadTitle();
+  const p=peopleList.querySelector(`[data-id="${m.from}"]`);
+  if(p)p.classList.add('unread');
+  notifyUser(m.name,'New private message');
+});
+let unreadPrivateCount=0;
+function updateUnreadTitle(){document.title=unreadPrivateCount?`(${unreadPrivateCount}) ButterflyTamilChat`:'ButterflyTamilChat'}
+function playMessageSound(){try{const C=window.AudioContext||window.webkitAudioContext;if(!C)return;const c=window._btcAudio||(window._btcAudio=new C());if(c.state==='suspended')c.resume();const o=c.createOscillator(),g=c.createGain();o.type='sine';o.frequency.value=880;g.gain.setValueAtTime(.0001,c.currentTime);g.gain.exponentialRampToValueAtTime(.08,c.currentTime+.01);g.gain.exponentialRampToValueAtTime(.0001,c.currentTime+.18);o.connect(g);g.connect(c.destination);o.start();o.stop(c.currentTime+.2)}catch{}}
+function notifyUser(title,body){playMessageSound();if('Notification' in window&&Notification.permission==='granted'&&document.visibilityState!=='visible')new Notification(title,{body});}
+
 function showTyping(name){const el=$('#typingIndicator');el.textContent=`${name} is typing…`;clearTimeout(window._btcTyping);window._btcTyping=setTimeout(()=>el.textContent='',1800);}
 function applyTheme(){const t=localStorage.getItem('btc_theme')||'dark';document.body.classList.toggle('light',t==='light');$('#themeBtn').textContent=t==='light'?'☀️':'🌙';}
-function selectPerson(uid,name,el,socketId){selectedId=socketId||uid;selectedName=name;document.querySelectorAll('.person').forEach(x=>x.classList.remove('selected','unread'));el.classList.add('selected');privateTarget=uid;$('#privateName').textContent=name;$('#privatePanel').classList.add('open');privateMessages.innerHTML='';socket.emit('private:open',uid)}
+function selectPerson(uid,name,el,socketId){selectedId=socketId||uid;selectedName=name;document.querySelectorAll('.person').forEach(x=>x.classList.remove('selected','unread'));el.classList.add('selected');privateTarget=uid;unreadPrivateCount=0;updateUnreadTitle();$('#privateName').textContent=name;$('#privatePanel').classList.add('open');privateMessages.innerHTML='';socket.emit('private:open',uid)}
 $('#closePrivate').onclick=()=>$('#privatePanel').classList.remove('open');
 function readImage(file,max=2200000){return new Promise((resolve,reject)=>{if(!file)return resolve(null);if(file.size>max)return reject(new Error('File is too large.'));const r=new FileReader();r.onload=()=>resolve({type:file.type,data:r.result,name:file.name});r.onerror=reject;r.readAsDataURL(file)})}
 let pendingAttachment=null;
